@@ -28,12 +28,16 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Compile Python modules
-        run: python -m compileall -q bot
+        run: python -m compileall -q bot tests
+
+      - name: Run quality-control tests
+        run: python -m unittest discover -s tests -v
 
       - name: Check required project files
         run: |
           test -f bot/main.py
           test -f bot/config.py
           test -f bot/storage.py
+          test -f bot/quality_control.py
           test -f requirements.txt
           test -f Dockerfile
