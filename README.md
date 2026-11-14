@@ -26,3 +26,11 @@ Never commit a real token or a populated `.env` file.
 ## Current limitation
 
 Telegram delivery is being prepared, but automatic deal detection is not implemented yet. No Amazon prices, discounts or pricing errors are currently scanned or verified.
+
+## GitHub Actions
+
+A CI workflow is configured in `.github/workflows/ci.yml`. It runs on pushes, pull requests and manual dispatch to install dependencies and validate Python syntax.
+
+This CI workflow does **not** host the Telegram bot continuously and does **not** scan product prices. GitHub-hosted Actions jobs are temporary executions. A scheduled scanner can be added once a permitted product-data source and the scanner implementation are ready. The Telegram polling bot still requires a continuously running process; alternatively, the project must be redesigned around one-shot Telegram message delivery for scheduled jobs.
+
+Do not enable a recurring scan or publish price alerts until source access, anomaly validation, and persistence between runs are implemented.
