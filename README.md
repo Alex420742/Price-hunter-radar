@@ -1,6 +1,18 @@
 # Price Hunter Radar
 
-Telegram control bot and price-alert project. The current scanner is intentionally disabled until a permitted product-data source and validated anomaly detector are integrated.
+Telegram control bot and price-alert project. The scanner remains disabled until a permitted product-data source is connected.
+
+## Automatic quality control
+
+A first automatic quality gate is available in `bot/quality_control.py`. It evaluates candidate offers before alert publication and returns one of three statuses:
+
+- `APPROVED`: required checks are satisfied.
+- `REVIEW`: data is incomplete, stale or needs human verification.
+- `REJECTED`: critical information is invalid or the item is not new.
+
+Checks include product identity, positive price, supported currency, seller identity, new condition, confirmed stock, shipping cost, source, observation timestamp and independent reference prices. Extreme price gaps are flagged for manual verification; a very low price is never treated as proof of a confirmed pricing error.
+
+The quality gate is implemented and unit-tested, but it is **not yet connected to a live product collector or Telegram alert pipeline**. Therefore it does not currently scan stores or publish verified deals.
 
 ## Telegram setup
 
@@ -21,16 +33,10 @@ Never commit a real token or a populated `.env` file.
 - `/watchlist`, `/add <product>`, `/remove <product>`: manage tracked product names.
 - `/pause`, `/resume`: pause or resume scanning.
 - `/testchannel`: send a controlled test post to the destination channel.
-- `/scan`: currently reports that scanning is unavailable until a permitted data source is connected.
-
-## Current limitation
-
-Telegram delivery is being prepared, but automatic deal detection is not implemented yet. No Amazon prices, discounts or pricing errors are currently scanned or verified.
+- `/scan`: remains unavailable until a permitted product-data source is connected.
 
 ## GitHub Actions
 
-A CI workflow is configured in `.github/workflows/ci.yml`. It runs on pushes, pull requests and manual dispatch to install dependencies and validate Python syntax.
+The CI workflow checks Python syntax and runs the quality-control unit tests on pushes, pull requests and manual dispatch. It does **not** host the Telegram bot continuously and does **not** scan product prices.
 
-This CI workflow does **not** host the Telegram bot continuously and does **not** scan product prices. GitHub-hosted Actions jobs are temporary executions. A scheduled scanner can be added once a permitted product-data source and the scanner implementation are ready. The Telegram polling bot still requires a continuously running process; alternatively, the project must be redesigned around one-shot Telegram message delivery for scheduled jobs.
-
-Do not enable a recurring scan or publish price alerts until source access, anomaly validation, and persistence between runs are implemented.
+A scheduled scanner still requires a permitted product-data source, persistence between runs and integration of the quality gate into the collector-to-alert pipeline. Never publish an offer as orderable without verifying seller, condition, stock, shipping and final checkout price.
