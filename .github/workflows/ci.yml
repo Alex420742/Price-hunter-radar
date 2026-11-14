@@ -1,0 +1,39 @@
+name: Price Hunter Radar - CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Python project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile Python modules
+        run: python -m compileall -q bot
+
+      - name: Check required project files
+        run: |
+          test -f bot/main.py
+          test -f bot/config.py
+          test -f bot/storage.py
+          test -f requirements.txt
+          test -f Dockerfile
