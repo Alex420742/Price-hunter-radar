@@ -136,9 +136,9 @@ class DataForSEOShoppingProvider:
             if not tasks:
                 continue
             task = tasks[0]
-            if task.get("status_code") in (20000, 20100):
+            if task.get("status_code") == 20000:
                 return self._parse_items(task)
-            if task.get("status_code") not in (None, 40601, 40602):
+            if task.get("status_code") not in (None, 20100, 40601, 40602):
                 raise DataForSEOError(
                     f"Task failed {task.get('status_code')}: {task.get('status_message')}"
                 )
