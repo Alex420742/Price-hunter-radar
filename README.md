@@ -68,3 +68,12 @@ Only explicit provider condition values new, neuf, brand new, or new in box pass
 ## Market peer verification
 
 The collector compares matching product-title candidates across distinct merchant domains returned in the same DataForSEO Google Shopping batch. It calculates a peer-price median and adds corroboration to the anomaly score. Domain matching removes `www.` and excludes the current seller domain. This is marketplace cross-seller evidence only, **not independent API/source verification**. Title similarity is heuristic and does not establish exact SKU identity; human review remains required. If fewer than two distinct peer merchants are found, the candidate receives limited or no peer corroboration.
+
+
+## Additional provider: Pricewatcha (public search)
+
+Pricewatcha public catalog search is integrated as a read-only, no-key provider. It is called only inside a manually triggered scan and reserves a provider-specific daily request quota before making the HTTP request. Default: maximum 10 search calls/day. Toggle with `PRICEWATCHA_ENABLED=false`; override the API base for tests with `PRICEWATCHA_API_BASE`. Preview/demo rows are ignored. Candidate condition is not inferred: the existing collector's strict explicit-new filter rejects unknown/used/refurbished conditions before SQLite/review queue. Public search may contain refurbished offers; this integration therefore may produce no admissible candidates. Pricewatcha search data is third-party price intelligence, not direct merchant data. Review merchant checkout and shipping manually.
+
+## Autonomous execution policy
+
+See [docs/AUTONOMOUS_OPERATING_POLICY.md](docs/AUTONOMOUS_OPERATING_POLICY.md) for the project execution standard: impact-first priorities, documented authorized data sources, hard budget guards, exact new-condition gating, review-only output, tests/CI before claims, and no automated scan or publishing.
