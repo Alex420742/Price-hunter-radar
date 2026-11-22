@@ -6,6 +6,7 @@ import os
 from dataclasses import asdict
 from bot.providers.dataforseo_shopping import DataForSEOShoppingProvider
 from bot.price_engine import PriceEngine
+from bot.market_verifier import verify_peers
 
 NEW_VALUES={"new","neuf","brand new","new in box"}
 
@@ -34,7 +35,8 @@ class Collector:
                 summary["errors"].append(f"{query}: {type(exc).__name__}: {exc}")
                 continue
             summary["results"]+=len(results)
-            for candidate in results:
+            peer_evidence=verify_peers(results)
+            for candidate, peer in zip(results, peer_evidence):
                 condition=(candidate.condition or "").strip().lower()
                 if condition not in NEW_VALUES:
                     summary["rejected_not_new"]+=1
@@ -49,6 +51,6 @@ class Collector:
                 # Deduplication is handled at observation insertion; don't queue repeated candidates.
                 if self.engine.was_recently_queued(key,price=candidate.price,seller=candidate.seller):
                     continue
-                self.engine.evaluate(observation_id)
+                self.engine.evaluate(observation_id, peer_reference=peer["peer_median"], peer_count=peer["peer_count"])
                 summary["queued"]+=1
         return summary
