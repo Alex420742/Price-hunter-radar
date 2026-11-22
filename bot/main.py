@@ -5,6 +5,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from bot.config import Settings
 from bot.storage import Storage
 from bot.price_engine import PriceEngine
+from bot.collector import Collector
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(name)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger('price-hunter-radar')
@@ -33,7 +34,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         '/help — commandes\n/status — état\n/watchlist — produits suivis\n'
         '/add <produit> — ajouter\n/remove <produit> — retirer\n/review — candidats à vérifier\n/approve <id> — approuver sans publier\n/reject <id> — rejeter\n'
         '/testchannel — tester la publication sur le canal\n'
-        '/scan — lancer un scan\n/pause et /resume — surveillance'
+        '/scan — scan manuel protégé\n/pause et /resume — surveillance'
     )
 
 
@@ -138,10 +139,31 @@ async def scan(update, context):
     if not allowed(update, settings):
         return await deny(update)
     if store.is_paused():
-        return await update.effective_message.reply_text('Surveillance en pause.')
+        return await update.effective_message.reply_text('Surveillance en pause. Utilise /resume avant un scan manuel.')
+    engine = context.application.bot_data['price_engine']
+    collector = context.application.bot_data['collector']
+    if not collector.provider.configured:
+        return await update.effective_message.reply_text('Collecte impossible : identifiants DataForSEO manquants. Aucun appel API effectué.')
+    queries = store.list_watchlist()
+    if not queries:
+        return await update.effective_message.reply_text('Watchlist vide. Ajoute un produit avec /add <produit>. Aucun appel API effectué.')
+    budget = engine.budget_status('dataforseo', collector.daily_requests, collector.daily_usd)
+    if not budget['allowed']:
+        return await update.effective_message.reply_text('Budget API quotidien atteint. Aucun appel API effectué.')
+    await update.effective_message.reply_text(f'Scan manuel démarré ({min(len(queries), collector.max_queries)} requêtes maximum). Budget contrôlé; produits non-neufs/inconnus exclus. Aucun post public.')
+    result = await collector.scan(queries)
     await update.effective_message.reply_text(
-        "Scan non disponible : aucune API produit autorisée n'est raccordée. Aucune fausse alerte ne sera générée."
+        'Scan manuel terminé.\\n'
+        f"Requêtes : {result['queries']}\\n"
+        f"Résultats fournisseur : {result['results']}\\n"
+        f"Produits explicitement neufs : {result['accepted_new']}\\n"
+        f"Exclus (état neuf non confirmé) : {result['rejected_not_new']}\\n"
+        f"Candidats Review Queue : {result['queued']}\\n"
+        f"Erreurs : {len(result['errors'])}\\n"
+        'Aucune publication automatique.'
     )
+    if result['errors']:
+        await update.effective_message.reply_text('\\n'.join(result['errors'][:3]))
 
 
 
@@ -188,7 +210,7 @@ def main():
     store = Storage(settings.database_path)
     engine = PriceEngine(settings.database_path)
     app = Application.builder().token(settings.telegram_bot_token).build()
-    app.bot_data.update(settings=settings, storage=store, price_engine=engine)
+    app.bot_data.update(settings=settings, storage=store, price_engine=engine, collector=Collector(engine))
     handlers = [
         ('start', start), ('help', help_command), ('status', status),
         ('watchlist', watchlist), ('add', add), ('remove', remove),
