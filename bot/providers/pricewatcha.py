@@ -14,7 +14,7 @@ class PricewatchaProvider:
     def __init__(self, *, timeout=15, base_url=None):
         self.timeout=timeout
         self.base_url=(base_url or os.getenv("PRICEWATCHA_API_BASE",BASE)).rstrip("/")
-        self.enabled=os.getenv("PRICEWATCHA_ENABLED","true").strip().lower() not in {"0","false","no","off"}
+        self.enabled=os.getenv("PRICEWATCHA_ENABLED","false").strip().lower() not in {"0","false","no","off"}
     @property
     def configured(self):
         return self.enabled
