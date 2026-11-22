@@ -40,3 +40,15 @@ Never commit a real token or a populated `.env` file.
 The CI workflow checks Python syntax and runs the quality-control unit tests on pushes, pull requests and manual dispatch. It does **not** host the Telegram bot continuously and does **not** scan product prices.
 
 A scheduled scanner still requires a permitted product-data source, persistence between runs and integration of the quality gate into the collector-to-alert pipeline. Never publish an offer as orderable without verifying seller, condition, stock, shipping and final checkout price.
+
+
+## Price Engine (manual-review foundation)
+
+- SQLite price observations with timestamps, source, seller, URL, shipping, condition and stock; unknown values remain NULL.
+- 90-day history query and median baseline after at least five prior observations.
+- Heuristic anomaly score and discount percentage. This is a lead, not proof of a price error.
+- Atomic daily API budget reservation with request-count and estimated USD caps.
+- Telegram Review Queue commands: `/review`, `/approve <id>`, `/reject <id>`. Candidates default to pending.
+- `/approve` marks a candidate approved for a later step only; it never posts to the channel.
+
+No automatic scans, provider calls, or deal publishing are activated by this change.
