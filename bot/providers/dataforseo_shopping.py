@@ -179,8 +179,8 @@ class DataForSEOShoppingProvider:
                     observed_at=observed_at,
                     product_id=item.get("product_id") or item.get("data_docid"),
                     shipping_cost=ship,
-                    condition=None,  # Google Shopping result does not reliably prove new condition
-                    in_stock=None,  # never infer stock from a search snippet
+                    condition=(item.get('condition') or item.get('condition_type')),  # only explicit provider data
+                    in_stock=(item.get('in_stock') if isinstance(item.get('in_stock'), bool) else None),  # never infer stock from a search snippet
                     old_price=_as_float(item.get("old_price")),
                     rating=_as_float((item.get("rating") or {}).get("value") if isinstance(item.get("rating"), dict) else item.get("rating")),
                     review_count=_as_int(item.get("reviews_count") or item.get("review_count")),
