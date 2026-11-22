@@ -76,6 +76,10 @@ class PriceEngine:
         if url and urlparse(url).scheme not in ("http","https"): raise ValueError("URL must use HTTP or HTTPS")
         stamp=observed_at or utcnow(); key=product_key(title,product_id)
         with self._connect() as db:
+            cutoff=(datetime.now(timezone.utc)-timedelta(hours=24)).isoformat()
+            duplicate=db.execute("SELECT id FROM price_observations WHERE product_key=? AND price=? AND currency=? AND COALESCE(seller,'')=COALESCE(?, '') AND source=? AND observed_at>=? ORDER BY id DESC LIMIT 1",(key,float(price),currency.upper(),seller,source,cutoff)).fetchone()
+            if duplicate:
+                return duplicate["id"],key
             cur=db.execute("""INSERT INTO price_observations(product_key,title,price,currency,seller,url,source,shipping_cost,condition,in_stock,product_id,observed_at)
             VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",(key,title,float(price),currency.upper(),seller,url,source,shipping_cost,condition,None if in_stock is None else int(bool(in_stock)),product_id,stamp))
             return cur.lastrowid,key
@@ -84,6 +88,11 @@ class PriceEngine:
         with self._connect() as db:
             rows=db.execute("SELECT * FROM price_observations WHERE product_key=? AND observed_at>=? ORDER BY observed_at DESC LIMIT ?",(product_key,cutoff,limit)).fetchall()
         return [dict(r) for r in rows]
+    def was_recently_queued(self, product_key, *, price, seller=None, hours=24):
+        cutoff=(datetime.now(timezone.utc)-timedelta(hours=hours)).isoformat()
+        with self._connect() as db:
+            row=db.execute("SELECT id FROM review_queue WHERE product_key=? AND current_price=? AND COALESCE(seller,'')=COALESCE(?, '') AND created_at>=? AND status IN ('pending','approved') LIMIT 1",(product_key,float(price),seller,cutoff)).fetchone()
+        return bool(row)
     def evaluate(self, observation_id, *, min_samples=5, lookback_days=90):
         with self._connect() as db:
             obs=db.execute("SELECT * FROM price_observations WHERE id=?",(observation_id,)).fetchone()
