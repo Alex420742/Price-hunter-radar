@@ -100,7 +100,9 @@ class PriceEngine:
         history=self.history(obs["product_key"],days=lookback_days)
         prior=[float(r["price"]) for r in history if r["id"]!=observation_id]
         baseline=median(prior) if len(prior)>=min_samples else None
-        if baseline is None and peer_reference and peer_count >= 2:\n            baseline=float(peer_reference)\n        discount=((baseline-obs["price"])/baseline*100) if baseline and obs["price"]<baseline else 0.0
+        if baseline is None and peer_reference and peer_count >= 2:
+            baseline=float(peer_reference)
+        discount=((baseline-obs["price"])/baseline*100) if baseline and obs["price"]<baseline else 0.0
         score=0; reasons=[]
         if baseline is None: reasons.append(f"Historique insuffisant ({len(prior)}/{min_samples} observations minimum)")
         else:
@@ -111,7 +113,14 @@ class PriceEngine:
         if obs["seller"]: score+=5
         if obs["url"] and urlparse(obs["url"]).scheme in ("http","https"): score+=5
         if obs["condition"] and obs["condition"].lower() in ("new","neuf"): score+=10
-        if obs["in_stock"]==1: score+=5\n        if peer_reference and peer_count>=2:\n            score+=min(20,5*int(peer_count))\n            reasons.append(f"Comparaison vendeurs: {peer_count} vendeurs distincts; médiane {float(peer_reference):.2f} {obs['currency']}")\n        elif peer_count==1:\n            score+=5\n            reasons.append("Une seule offre concurrente identifiée; corroboration limitée.")\n        score=min(100,score)
+        if obs["in_stock"]==1: score+=5
+        if peer_reference and peer_count>=2:
+            score+=min(20,5*int(peer_count))
+            reasons.append(f"Comparaison vendeurs: {peer_count} vendeurs distincts; médiane {float(peer_reference):.2f} {obs['currency']}")
+        elif peer_count==1:
+            score+=5
+            reasons.append("Une seule offre concurrente identifiée; corroboration limitée.")
+        score=min(100,score)
         reasons.append("Signal heuristique uniquement : anomalie non confirmée.")
         with self._connect() as db:
             cur=db.execute("""INSERT INTO review_queue(product_key,title,current_price,currency,seller,url,source,shipping_cost,condition,in_stock,score,discount_pct,baseline_price,reasons,status,created_at)
