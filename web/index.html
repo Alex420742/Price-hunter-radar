@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b10"><meta name="description" content="Price Hunter Radar — chasse aux prix anormalement bas en Europe.">
+<title>Price Hunter Radar</title><link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+<div class="brand"><div class="mark">⌁</div><div><strong>PRICE HUNTER</strong><small>RADAR EUROPE</small></div></div>
+<div class="nav-label">NAVIGATION</div><a class="active" href="#"><span>◉</span> Vue d'ensemble</a><a href="#deals"><span>⌕</span> Opportunités</a><a href="#categories"><span>▦</span> Catégories</a><a href="#sources"><span>◈</span> Sources</a>
+<div class="side-bottom"><div class="pulse"></div><div><b>Radar en préparation</b><small>Connecteurs en cours d'intégration</small></div></div>
+</aside>
+<main>
+<header><div class="breadcrumb">PRICE HUNTER <span>/</span> DASHBOARD</div><div class="profile"><span class="status" id="connection-status">● DEMO</span><div class="avatar">PH</div></div></header>
+<section class="hero"><div><p class="eyebrow">EUROPEAN DEAL INTELLIGENCE</p><h1>La bonne affaire.<br><em>Avant tout le monde.</em></h1><p class="sub">Détection d'anomalies de prix, promos exceptionnelles et offres vérifiées — uniquement sur des produits neufs.</p></div><div class="hero-art"><div class="orbit o1"></div><div class="orbit o2"></div><div class="radar"><div class="sweep"></div><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="core">PH</span></div></div></section>
+<section class="connect"><div><b>Connexion au radar privé</b><small>Token d’accès dashboard (secret)</small></div><input id="api-token" type="password" autocomplete="off" placeholder="Token d’accès"><button id="connect">Connecter</button><button id="disconnect" class="secondary">Déconnecter</button><p id="connection-message">Mode démo. Connecte-toi pour afficher la Review Queue réelle.</p></section><div class="stats"><article><label>CANDIDATS EN ATTENTE</label><strong id="stat-pending">—</strong><small>Review Queue privée</small></article><article><label>OBSERVATIONS PRIX</label><strong id="stat-observations">—</strong><small>Historique enregistré</small></article><article><label>PRODUITS SURVEILLÉS</label><strong id="stat-watchlist">—</strong><small>Watchlist actuelle</small></article><article><label>DERNIÈRE OBSERVATION</label><strong class="sm" id="stat-latest">—</strong><small id="stat-paused">Connexion requise</small></article></div>
+<section class="content" id="deals"><div class="section-head"><div><p class="eyebrow">FEED DE DÉTECTION</p><h2>Opportunités radar</h2></div><div class="filters"><select id="category"><option value="all">Toutes catégories</option><option>Tech</option><option>Maison</option><option>Auto</option><option>Audio</option></select><input id="search" placeholder="Rechercher un produit…"></div></div>
+<div class="notice" id="demo-notice"><span>ⓘ</span><div><b>Mode aperçu</b><p>Offres fictives de démonstration. Connecte-toi pour voir les candidats réels. Un candidat n’est pas un deal vérifié.</p></div></div>
+<div class="deal-grid" id="deal-grid"></div></section>
+<section class="bottom" id="categories"><div><p class="eyebrow">UN RADAR MULTI-SECTEURS</p><h2>Des catégories.<br>Une seule mission.</h2></div><div class="chips"><span>Électronique</span><span>Apple & accessoires</span><span>Audio</span><span>Auto & detailing</span><span>Maison</span><span>Animaux</span><span>Gaming</span><span>Outillage</span></div></section>
+<section id="sources" class="sources"><h3>Sources de collecte</h3><p>DataForSEO Shopping · eBay Browse · Pricewatcha (expérimental) · retailers européens — collecte manuelle, limites de budget et validation humaine.</p></section>
+<footer>PRICE HUNTER RADAR <span>Prototype d'interface · données non réelles</span></footer>
+</main></div><script src="./app.js"></script></body></html>
