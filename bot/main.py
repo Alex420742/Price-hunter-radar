@@ -56,12 +56,16 @@ async def status(update, context):
     pending = len(engine.list_review('pending', limit=1000))
     scan_state = 'activé' if settings.scanner_enabled else 'désactivé (source produit non configurée)'
     channel_state = 'configuré' if settings.telegram_channel_id else 'non configuré'
-    await update.effective_message.reply_text(
-        f'Bot Telegram : opérationnel\nCanal d’alertes : {channel_state}\n'
-        f'Scanner : {scan_state}\nPause : {"oui" if store.is_paused() else "non"}\n'
-        f'Produits suivis : {len(store.list_watchlist())}\nReview Queue : {pending} en attente\n'
-        f'Budget API : {budget[\"requests_used\"]}/{budget[\"requests_limit\"]} appels, {budget[\"estimated_usd\"]:.4f}/{budget[\"usd_limit\"]:.2f} USD estimés'
-    )
+    lines = [
+        'Bot Telegram : opérationnel',
+        f'Canal d’alertes : {channel_state}',
+        f'Scanner : {scan_state}',
+        f'Pause : {"oui" if store.is_paused() else "non"}',
+        f'Produits suivis : {len(store.list_watchlist())}',
+        f'Review Queue : {pending} en attente',
+        f'Budget API : {budget["requests_used"]}/{budget["requests_limit"]} requêtes, {budget["estimated_usd"]:.4f}/{budget["usd_limit"]:.2f} USD estimés',
+    ]
+    await update.effective_message.reply_text("\n".join(lines))
 
 
 async def watchlist(update, context):
