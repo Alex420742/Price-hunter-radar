@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from bot.market_verifier import verify_peers
 
 class Candidate:
-    def __init__(self,title,price,url):
-        self.title=title; self.price=price; self.product_url=url
+    def __init__(self,title,price,url,condition='new'):
+        self.title=title; self.price=price; self.product_url=url; self.condition=condition
 
 class MarketVerifierTests(unittest.TestCase):
     def test_same_product_peer_prices_across_domains(self):
