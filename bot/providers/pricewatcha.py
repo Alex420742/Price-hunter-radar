@@ -36,7 +36,7 @@ class PricewatchaProvider:
         if not q: raise ValueError("keyword must not be empty")
         return await asyncio.to_thread(self._search_sync,q)
     def _search_sync(self,keyword):
-        url=BASE+"/search?"+urllib.parse.urlencode({"q":keyword[:120],"limit":25})
+        url=self.base_url+"/search?"+urllib.parse.urlencode({"q":keyword[:120],"limit":25})
         payload=self._get(url)
         rows=payload if isinstance(payload,list) else payload.get("products",payload.get("results",[]))
         if not isinstance(rows,list): raise PricewatchaError("Unexpected search response shape")
