@@ -20,6 +20,10 @@ def similarity(a,b):
     ta,tb=tokens(a),tokens(b)
     return len(ta & tb)/len(ta | tb) if ta and tb else 0.0
 
+def is_explicitly_new(item):
+    condition=(getattr(item,"condition",None) or "").strip().lower()
+    return condition in {"new","neuf","brand new","new in box"}
+
 def verify_peers(candidates, min_similarity=0.65):
     """Return peer evidence for each item: median price, unique merchant domains and peer count."""
     evidence=[]
@@ -27,7 +31,7 @@ def verify_peers(candidates, min_similarity=0.65):
         matches=[]
         target_domain=domain(item.product_url)
         for other in candidates:
-            if other is item or not other.product_url or not other.price or other.price<=0:
+            if other is item or not is_explicitly_new(other) or not other.product_url or not other.price or other.price<=0:
                 continue
             other_domain=domain(other.product_url)
             if not other_domain or other_domain==target_domain:
