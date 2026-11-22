@@ -1,5 +1,5 @@
 import tempfile
-import unittest
+import unittest\nfrom datetime import datetime, timezone, timedelta
 from pathlib import Path
 from bot.price_engine import PriceEngine
 
@@ -23,7 +23,7 @@ class PriceEngineTests(unittest.TestCase):
         self.assertTrue(self.engine.review(cid,"approved","manual"))
         self.assertFalse(self.engine.review(cid,"rejected"))
     def test_anomaly_baseline(self):
-        for p in [100,100,100,100,100]: self.engine.record_observation(title="Mouse",price=p,source="test")
+        for day in range(5,0,-1):\n            stamp=(datetime.now(timezone.utc)-timedelta(days=day)).isoformat()\n            self.engine.record_observation(title="Mouse",price=100,source="test",observed_at=stamp)
         oid,_=self.engine.record_observation(title="Mouse",price=40,source="test")
         cid=self.engine.evaluate(oid)
         item=self.engine.candidate(cid)
