@@ -100,14 +100,16 @@ class PriceEngine:
         history=self.history(obs["product_key"],days=lookback_days)
         prior=[float(r["price"]) for r in history if r["id"]!=observation_id]
         baseline=median(prior) if len(prior)>=min_samples else None
+        baseline_source='historique' if baseline is not None else None
         if baseline is None and peer_reference and peer_count >= 2:
             baseline=float(peer_reference)
+            baseline_source='comparaison vendeurs'
         discount=((baseline-obs["price"])/baseline*100) if baseline and obs["price"]<baseline else 0.0
         score=0; reasons=[]
         if baseline is None: reasons.append(f"Historique insuffisant ({len(prior)}/{min_samples} observations minimum)")
         else:
             score+=min(60,int(discount*1.5))
-            reasons.append(f"{discount:.1f}% sous la médiane historique ({baseline:.2f} {obs['currency']})")
+            reasons.append(f"{discount:.1f}% sous la référence {baseline_source} ({baseline:.2f} {obs['currency']})")
             if discount>=30: score+=15
             if discount>=50: score+=10
         if obs["seller"]: score+=5
