@@ -17,7 +17,7 @@ class Collector:
         self.provider=provider or DataForSEOShoppingProvider()
         self.ebay_provider=ebay_provider or EbayBrowseProvider()
         self.pricewatcha_provider=pricewatcha_provider or PricewatchaProvider()
-        self.pricewatcha_daily_requests=max(1,int(os.getenv('PRICEHUNTER_PRICEWATCHA_DAILY_REQUEST_LIMIT','10')))
+        self.pricewatcha_daily_requests=max(1,int(os.getenv('PRICEHUNTER_PRICEWATCHA_DAILY_REQUEST_LIMIT','3')))
         self.max_queries=max(1,int(os.getenv("PRICEHUNTER_MAX_QUERIES_PER_SCAN","3")))
         self.daily_requests=max(1,int(os.getenv("PRICEHUNTER_DAILY_REQUEST_LIMIT","5")))
         self.daily_usd=max(0.01,float(os.getenv("PRICEHUNTER_DAILY_BUDGET_USD","1.00")))
