@@ -52,7 +52,8 @@ async def status(update, context):
     if not allowed(update, settings):
         return await deny(update)
     engine = context.application.bot_data['price_engine']
-    budget = engine.budget_status()\n    pending = len(engine.list_review('pending', limit=1000))\n    scan_state = 'activé' if settings.scanner_enabled else 'désactivé (source produit non configurée)'
+    budget = engine.budget_status()
+    pending = len(engine.list_review('pending', limit=1000))\n    scan_state = 'activé' if settings.scanner_enabled else 'désactivé (source produit non configurée)'
     channel_state = 'configuré' if settings.telegram_channel_id else 'non configuré'
     await update.effective_message.reply_text(
         f'Bot Telegram : opérationnel\nCanal d’alertes : {channel_state}\n'
@@ -186,7 +187,8 @@ def main():
         ('start', start), ('help', help_command), ('status', status),
         ('watchlist', watchlist), ('add', add), ('remove', remove),
         ('pause', pause), ('resume', resume), ('scan', scan),
-        ('testchannel', test_channel), ('review', review_queue),\n        ('approve', approve), ('reject', reject),
+        ('testchannel', test_channel), ('review', review_queue),
+        ('approve', approve), ('reject', reject),
     ]
     for command, handler in handlers:
         app.add_handler(CommandHandler(command, handler))
