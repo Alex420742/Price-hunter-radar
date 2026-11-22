@@ -77,3 +77,8 @@ Pricewatcha public catalog search is integrated as a read-only, no-key provider.
 ## Autonomous execution policy
 
 See [docs/AUTONOMOUS_OPERATING_POLICY.md](docs/AUTONOMOUS_OPERATING_POLICY.md) for the project execution standard: impact-first priorities, documented authorized data sources, hard budget guards, exact new-condition gating, review-only output, tests/CI before claims, and no automated scan or publishing.
+
+
+## Private dashboard
+
+The optional web dashboard serves static UI and read-only API endpoints from the bot container. Enable it with `DASHBOARD_ENABLED=true`, set `DASHBOARD_TOKEN` to a random secret of at least 24 characters, and expose the hosting platform's `PORT` (or `DASHBOARD_PORT`, default 8080). The dashboard is served at `/`; API routes `/api/status` and `/api/offers?status=pending` require `Authorization: Bearer <token>`. `/api/history?product_key=...` is also read-only. The API never accepts write actions. The frontend stores the token only in session storage in the browser tab. Keep HTTPS enabled on the hosting platform and do not commit the token. The dashboard's live feed shows Review Queue candidates only; they are not verified deals and are not automatically published.
