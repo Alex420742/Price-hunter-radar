@@ -1,6 +1,6 @@
 # Price Hunter Radar
 
-Telegram control bot and price-alert project. The scanner remains disabled until a permitted product-data source is connected.
+Telegram control bot and price-alert project. The collector is connected for manual `/scan` commands only. Scheduled scans remain off; offers are never automatically published.
 
 ## Automatic quality control
 
@@ -33,7 +33,7 @@ Never commit a real token or a populated `.env` file.
 - `/watchlist`, `/add <product>`, `/remove <product>`: manage tracked product names.
 - `/pause`, `/resume`: pause or resume scanning.
 - `/testchannel`: send a controlled test post to the destination channel.
-- `/scan`: remains unavailable until a permitted product-data source is connected.
+- `/scan`: manually invokes DataForSEO with watchlist, query cap and daily API budget; candidates go only to the private review queue.
 
 ## GitHub Actions
 
@@ -51,4 +51,15 @@ A scheduled scanner still requires a permitted product-data source, persistence 
 - Telegram Review Queue commands: `/review`, `/approve <id>`, `/reject <id>`. Candidates default to pending.
 - `/approve` marks a candidate approved for a later step only; it never posts to the channel.
 
-No automatic scans, provider calls, or deal publishing are activated by this change.
+The DataForSEO collector is wired to the watchlist for manual `/scan` only. It enforces a daily request/budget guard, caps queries per scan, deduplicates observations and queue candidates, and rejects any candidate without an explicit new-condition field. Google Shopping results commonly omit condition, so those results are deliberately excluded rather than assumed new. No scheduled scan or auto-publishing is enabled.
+
+## Manual collector controls
+
+Environment variables (optional conservative defaults):
+- DATAFORSEO_LOGIN, DATAFORSEO_PASSWORD: provider credentials; missing credentials block the scan before any call.
+- PRICEHUNTER_MAX_QUERIES_PER_SCAN: default 3 watchlist queries per manual scan.
+- PRICEHUNTER_DAILY_REQUEST_LIMIT: default 5 tasks/day.
+- PRICEHUNTER_DAILY_BUDGET_USD: default $1/day estimated ceiling.
+- DATAFORSEO_ESTIMATED_TASK_COST_USD: default $0.001/task; adjust to actual plan/charges.
+
+Only explicit provider condition values new, neuf, brand new, or new in box pass the strict new-product gate. Unknown/used items are discarded. Review Queue is private and no handler posts candidates to the public channel.
