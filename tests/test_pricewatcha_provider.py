@@ -20,8 +20,8 @@ class PricewatchaProviderTests(unittest.TestCase):
         self.assertEqual(items[0].source,"pricewatcha")
         self.assertEqual(items[0].price,89.9)
         self.assertIsNone(items[0].condition)
-    def test_empty_query_rejected(self):
+    async def test_empty_query_rejected(self):
         provider=PricewatchaProvider()
         with self.assertRaises(ValueError):
-            provider._search_sync(" ")
+            await provider.search(" ")
 if __name__=="__main__": unittest.main()
