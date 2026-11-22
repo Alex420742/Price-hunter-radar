@@ -5,6 +5,7 @@ from __future__ import annotations
 from statistics import median
 from urllib.parse import urlparse
 import re
+from difflib import SequenceMatcher
 
 def tokens(title):
     return {t for t in re.findall(r"[a-z0-9]+", (title or "").lower()) if len(t)>1}
@@ -18,7 +19,13 @@ def domain(url):
 
 def similarity(a,b):
     ta,tb=tokens(a),tokens(b)
-    return len(ta & tb)/len(ta | tb) if ta and tb else 0.0
+    jaccard=len(ta & tb)/len(ta | tb) if ta and tb else 0.0
+    compact_a=re.sub(r"[^a-z0-9]","",(a or "").lower())
+    compact_b=re.sub(r"[^a-z0-9]","",(b or "").lower())
+    ratio=SequenceMatcher(None,compact_a,compact_b).ratio()
+    if compact_a and compact_b and (compact_a in compact_b or compact_b in compact_a):
+        ratio=max(ratio,0.85)
+    return max(jaccard,ratio)
 
 def is_explicitly_new(item):
     condition=(getattr(item,"condition",None) or "").strip().lower()
