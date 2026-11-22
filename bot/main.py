@@ -6,6 +6,9 @@ from bot.config import Settings
 from bot.storage import Storage
 from bot.price_engine import PriceEngine
 from bot.collector import Collector
+from bot.dashboard import start_dashboard_server
+import os
+from pathlib import Path
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(name)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger('price-hunter-radar')
@@ -211,6 +214,13 @@ def main():
     engine = PriceEngine(settings.database_path)
     app = Application.builder().token(settings.telegram_bot_token).build()
     app.bot_data.update(settings=settings, storage=store, price_engine=engine, collector=Collector(engine))
+    if os.getenv('DASHBOARD_ENABLED', 'false').lower() == 'true':
+        dashboard_token = os.getenv('DASHBOARD_TOKEN', '').strip()
+        if len(dashboard_token) < 24:
+            raise RuntimeError('DASHBOARD_TOKEN must be at least 24 characters when dashboard is enabled.')
+        web_dir = os.getenv('DASHBOARD_WEB_DIR', str(Path(__file__).resolve().parent.parent / 'web'))
+        dashboard = start_dashboard_server(settings.database_path, web_dir, dashboard_token, os.getenv('DASHBOARD_HOST', '0.0.0.0'), int(os.getenv('PORT', os.getenv('DASHBOARD_PORT', '8080'))))
+        app.bot_data['dashboard_server'] = dashboard
     handlers = [
         ('start', start), ('help', help_command), ('status', status),
         ('watchlist', watchlist), ('add', add), ('remove', remove),
