@@ -63,3 +63,8 @@ Environment variables (optional conservative defaults):
 - DATAFORSEO_ESTIMATED_TASK_COST_USD: default $0.001/task; adjust to actual plan/charges.
 
 Only explicit provider condition values new, neuf, brand new, or new in box pass the strict new-product gate. Unknown/used items are discarded. Review Queue is private and no handler posts candidates to the public channel.
+
+
+## Market peer verification
+
+The collector compares matching product-title candidates across distinct merchant domains returned in the same DataForSEO Google Shopping batch. It calculates a peer-price median and adds corroboration to the anomaly score. Domain matching removes `www.` and excludes the current seller domain. This is marketplace cross-seller evidence only, **not independent API/source verification**. Title similarity is heuristic and does not establish exact SKU identity; human review remains required. If fewer than two distinct peer merchants are found, the candidate receives limited or no peer corroboration.
