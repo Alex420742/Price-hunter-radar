@@ -53,7 +53,8 @@ async def status(update, context):
         return await deny(update)
     engine = context.application.bot_data['price_engine']
     budget = engine.budget_status()
-    pending = len(engine.list_review('pending', limit=1000))\n    scan_state = 'activé' if settings.scanner_enabled else 'désactivé (source produit non configurée)'
+    pending = len(engine.list_review('pending', limit=1000))
+    scan_state = 'activé' if settings.scanner_enabled else 'désactivé (source produit non configurée)'
     channel_state = 'configuré' if settings.telegram_channel_id else 'non configuré'
     await update.effective_message.reply_text(
         f'Bot Telegram : opérationnel\nCanal d’alertes : {channel_state}\n'
