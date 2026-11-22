@@ -1,5 +1,6 @@
 import tempfile
-import unittest\nfrom datetime import datetime, timezone, timedelta
+import unittest
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from bot.price_engine import PriceEngine
 
@@ -7,7 +8,8 @@ class PriceEngineTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory()
         self.engine=PriceEngine(str(Path(self.tmp.name)/"test.sqlite"))
-    def tearDown(self): self.tmp.cleanup()
+    def tearDown(self):
+        self.tmp.cleanup()
     def test_observation_history(self):
         oid,key=self.engine.record_observation(title="Headphones",price=80,source="test")
         rows=self.engine.history(key)
@@ -23,10 +25,13 @@ class PriceEngineTests(unittest.TestCase):
         self.assertTrue(self.engine.review(cid,"approved","manual"))
         self.assertFalse(self.engine.review(cid,"rejected"))
     def test_anomaly_baseline(self):
-        for day in range(5,0,-1):\n            stamp=(datetime.now(timezone.utc)-timedelta(days=day)).isoformat()\n            self.engine.record_observation(title="Mouse",price=100,source="test",observed_at=stamp)
+        for day in range(5,0,-1):
+            stamp=(datetime.now(timezone.utc)-timedelta(days=day)).isoformat()
+            self.engine.record_observation(title="Mouse",price=100,source="test",observed_at=stamp)
         oid,_=self.engine.record_observation(title="Mouse",price=40,source="test")
         cid=self.engine.evaluate(oid)
         item=self.engine.candidate(cid)
         self.assertEqual(item["baseline_price"],100)
         self.assertGreaterEqual(item["discount_pct"],50)
-if __name__=="__main__": unittest.main()
+if __name__=="__main__":
+    unittest.main()
