@@ -59,7 +59,8 @@ async def status(update, context):
     await update.effective_message.reply_text(
         f'Bot Telegram : opérationnel\nCanal d’alertes : {channel_state}\n'
         f'Scanner : {scan_state}\nPause : {"oui" if store.is_paused() else "non"}\n'
-        f'Produits suivis : {len(store.list_watchlist())}\nReview Queue : {pending} en attente\n'\n        f'Budget API : {budget[\"requests_used\"]}/{budget[\"requests_limit\"]} appels, {budget[\"estimated_usd\"]:.4f}/{budget[\"usd_limit\"]:.2f} USD estimés'
+        f'Produits suivis : {len(store.list_watchlist())}\nReview Queue : {pending} en attente\n'
+        f'Budget API : {budget[\"requests_used\"]}/{budget[\"requests_limit\"]} appels, {budget[\"estimated_usd\"]:.4f}/{budget[\"usd_limit\"]:.2f} USD estimés'
     )
 
 
