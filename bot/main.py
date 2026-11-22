@@ -51,7 +51,8 @@ async def status(update, context):
     settings, store = services(context)
     if not allowed(update, settings):
         return await deny(update)
-    engine = context.application.bot_data['price_engine']\n    budget = engine.budget_status()\n    pending = len(engine.list_review('pending', limit=1000))\n    scan_state = 'activé' if settings.scanner_enabled else 'désactivé (source produit non configurée)'
+    engine = context.application.bot_data['price_engine']
+    budget = engine.budget_status()\n    pending = len(engine.list_review('pending', limit=1000))\n    scan_state = 'activé' if settings.scanner_enabled else 'désactivé (source produit non configurée)'
     channel_state = 'configuré' if settings.telegram_channel_id else 'non configuré'
     await update.effective_message.reply_text(
         f'Bot Telegram : opérationnel\nCanal d’alertes : {channel_state}\n'
@@ -177,7 +178,8 @@ async def reject(update, context):
 def main():
     load_dotenv()
     settings = Settings.from_env()
-    store = Storage(settings.database_path)\n    engine = PriceEngine(settings.database_path)
+    store = Storage(settings.database_path)
+    engine = PriceEngine(settings.database_path)
     app = Application.builder().token(settings.telegram_bot_token).build()
     app.bot_data.update(settings=settings, storage=store, price_engine=engine)
     handlers = [
