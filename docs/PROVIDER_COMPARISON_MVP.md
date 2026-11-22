@@ -4,7 +4,7 @@ Research checked **22 November 2026**. Provider prices, access conditions and co
 
 ## Decision
 
-**Recommended first integration: DataForSEO Google Shopping Products API, normal priority, with a strict spend cap and one query per scan.** This is the best technical proof-of-concept for broad European retailer discovery because it returns structured shopping listings (title, price, currency, seller, rating and result identifiers), supports location/language, and is billed by task. DataForSEO documents task-post/task-get async flow and task depth; normal priority avoids the additional high-priority cost. Its published Standard/normal price is to be checked in the provider dashboard before use; an external comparison currently reports $0.001 per SERP/product result, but that price is not guaranteed and should not be treated as a committed quote.
+**Primary provider: DataForSEO Google Shopping Products API (paid, guarded). Second provider now connected: Pricewatcha public search API (read-only, anonymous quota, no key), guarded to 3 calls/day.** This is the best technical proof-of-concept for broad European retailer discovery because it returns structured shopping listings (title, price, currency, seller, rating and result identifiers), supports location/language, and is billed by task. DataForSEO documents task-post/task-get async flow and task depth; normal priority avoids the additional high-priority cost. Its published Standard/normal price is to be checked in the provider dashboard before use; an external comparison currently reports $0.001 per SERP/product result, but that price is not guaranteed and should not be treated as a committed quote.
 
 **Important limitations:** Google Shopping is an aggregator/search layer, not a merchant-authoritative stock or checkout source. Its listings do not reliably prove condition (new), shipping, final checkout total, seller legitimacy, or stock. Candidates from this provider must remain REVIEW until these facts are independently verified. The API may also miss stores/products and results are location-dependent.
 
@@ -67,3 +67,8 @@ DataForSEO Google Shopping Products returns product listing fields such as `titl
 - Amazon Associates policies: https://partenaires.amazon.fr/help/operating/policies?language=fr_FR
 
 Amazon note: Amazon PA-API v5 has been retired in 2026; Creators API is the successor and is subject to eligibility and affiliate program requirements. Do not build a new PA-API v5 integration.
+
+
+## Pricewatcha integration status
+
+Pricewatcha's public `GET /api/v1/search?q=…&limit=…` endpoint is connected as a second provider in `bot/providers/pricewatcha.py`. Anonymous access is documented, but public read/search is subject to quotas and potential restrictions if used abusively. Price Hunter's local cap is intentionally set to 3 searches/day and can be disabled with `PRICEWATCHA_ENABLED=false`. The connector filters demo preview/inactive/malformed results; it does not infer condition. Candidates flow through the existing explicit-new condition gate and Review Queue. Search data is third-party price intelligence, not an independent direct merchant feed.
